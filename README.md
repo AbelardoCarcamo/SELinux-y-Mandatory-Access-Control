@@ -14,12 +14,10 @@
 
 <br/>
 
-| 👤 Integrante | 🎯 Rol |
-|:---:|:---:|
-| Mia | Teoría — Introducción y fundamentos |
-| Lex | Teoría — Funcionamiento, modos y hardening |
-| Abel | Demo — Ataque desde Kali Linux |
-| Chester | Demo — Defensa y diagnóstico en Rocky Linux |
+| 👤 Integrante      | 🎯 Rol |
+|:------------------|:--------|
+| Abelardo Cárcamo | Teoría y Demo — Hardening, configuración y defensa con SELinux en Rocky Linux |
+| Chester Ferrer   | Demo — Ataques y pruebas desde Kali Linux |
 
 </div>
 
